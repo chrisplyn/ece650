@@ -14,7 +14,7 @@
 
 
 void bfs(adjList* adj, int numNodes, int origin, int* prev) {
-	boolean visited[numNodes];
+	boolean* visited = (boolean *) malloc(numNodes*sizeof(boolean));
 	int i;
 	for (i = 0; i < numNodes; ++i) {
 		visited[i] = FALSE;
@@ -45,6 +45,7 @@ void bfs(adjList* adj, int numNodes, int origin, int* prev) {
 		free(data);
 	}
 	freeQueue(&q);
+   free(visited);
 }
 
 int main(int argc, char *argv[]) {
