@@ -45,83 +45,92 @@ void bfs(adjList* adj, int numNodes, int origin, int* prev) {
 		free(data);
 	}
 	freeQueue(&q);
-   free(visited);
+	free(visited);
 }
 
 int main(int argc, char *argv[]) {
-   char *line = NULL, *p;
-   size_t size;
+   char line,c;
    int numNodes, e1, e2, start, dest,*prev;
    adjList adj;
-   int newline;
 
-   while ( (newline = getline(&line, &size, stdin)) != EOF) {
-      switch(*line) {
+   loop:while(1) {
+      if(scanf(" %c", &line) == EOF) {
+         break;
+      }
+
+      switch(line) {
          case 'V':
-            sscanf(line+2, "%d", &numNodes);
+            scanf(" %d", &numNodes);
+
+            if(numNodes < 0) {
+               printf("Error: Invalid number of vertices: %d!\n", numNodes);
+               goto loop;
+            }
+
             initAdjList(&adj, numNodes, sizeof(int));
             break;
          case 'E':
-            p = line+2;
+            scanf(" %c", &c);
 
-            while(*p != '}') {
-               sscanf(p+1,"<%d,%d>",&e1,&e2);
+            while(c != '}') {
+               scanf(" <%d,%d>", &e1,&e2);
+
+               if( (e1 >= numNodes || e1 < 0) || (e2 >= numNodes || e2 < 0)) {
+                  printf("Error: Invalid edge <%d,%d>!\n", e1, e2);
+                  freeAdjList(&adj);
+                  goto loop;
+               }
+
                append(adj.l+e1,&e2);
                append(adj.l+e2,&e1);
-               while(*p++ != '>');	// move pointer to position right after '>'
+               scanf("%c", &c);
             }
 
             break;
-            case 's':
-               sscanf(line+2,"%d %d",&start,&dest);
-               list result;
-               createList(&result, sizeof(int), NULL);
+         case 's':
+            scanf(" %d %d", &start, &dest);
 
-               if(start >= numNodes || start < 0) {
-                  printf("Error: Source vertex %d does not exist!\n", start);
-                  goto CLEANUP;
-               }
+            if((start >= numNodes || start < 0) || (dest >= numNodes || dest < 0)) {
+               printf("Error: Invalid source or destination (%d,%d)\n", start, dest);
+               freeAdjList(&adj);
+               goto loop;
+            }
 
-               if(dest >= numNodes || dest < 0) {
-                  printf("Error: Destination vertex %d does not exist!\n", dest);
-                  goto CLEANUP;
-               }
+            list result;
+            createList(&result, sizeof(int), NULL);
+            prev = (int *)malloc(numNodes*sizeof(int));
+            bfs(&adj, numNodes, start, prev);
 
-               prev = (int *)malloc(numNodes*sizeof(int));
-               bfs(&adj, numNodes, start, prev);
-               int cur = dest;
+            int cur = dest;
+            while(prev[cur] != -1) {
+               prepend(&result,&cur);
+               cur = prev[cur];
+            }
 
-               while(prev[cur] != -1) {
-                  prepend(&result,&cur);
-                  cur = prev[cur];
-               }
+            if(cur == start) {
+               prepend(&result,&cur);
+            }
+            else {
+               printf("Error: Path between vertex %d and vertex %d does not exist!\n", start, dest);
+               goto CLEANUP;
+            }
 
-               if(cur == start) {
-                  prepend(&result,&cur);
-               }
-               else {
-                  printf("Error: Path between vertex %d and vertex %d does not exist!\n", start, dest);
-                  goto CLEANUP;
-               }
+            listNode *node = result.head;
 
-               listNode *node = result.head;
+            while(node != result.tail) {
+               printf("%d-", *(int *) node->data);
+               node = node->next;
+            }
+            printf("%d\n", *(int *) result.tail->data);
 
-               while(node != result.tail) {
-                  printf("%d-", *(int *) node->data);
-                  node = node->next;
-               }
-               printf("%d\n", *(int *) result.tail->data);
+            CLEANUP:
+                if(result.length != 0) {
+                   destroy(&result);
+                }
 
-               CLEANUP:
-                  if(result.length != 0) {
-                     destroy(&result);
-                  }
-
-                  freeAdjList(&adj);
-                  free(prev);
-                  break;
+                free(prev);
+                freeAdjList(&adj);
+                break;
       }
    }
-
-   return 0;
 }
