@@ -25,7 +25,9 @@ void freeAdjList(adjList *adj) {
    for(i=0; i<adj->numNodes; ++i) {
       destroy(adj->l+i);
    }
+
    free(adj->l);
+   adj->l = NULL;
 }
 
 void printAdjList(adjList *adj) {

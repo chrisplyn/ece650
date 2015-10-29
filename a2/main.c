@@ -51,13 +51,9 @@ void bfs(adjList* adj, int numNodes, int origin, int* prev) {
 int main(int argc, char *argv[]) {
    char line,c;
    int numNodes, e1, e2, start, dest,*prev;
-   adjList adj;
+   adjList adj = {NULL, 0};
 
-   loop:while(1) {
-      if(scanf(" %c", &line) == EOF) {
-         break;
-      }
-
+   loop:while(scanf(" %c", &line) != EOF) {
       switch(line) {
          case 'V':
             scanf(" %d", &numNodes);
@@ -65,6 +61,10 @@ int main(int argc, char *argv[]) {
             if(numNodes < 0) {
                printf("Error: Invalid number of vertices: %d!\n", numNodes);
                goto loop;
+            }
+
+            if(adj.l != NULL) {
+               freeAdjList(&adj);
             }
 
             initAdjList(&adj, numNodes, sizeof(int));
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 
                append(adj.l+e1,&e2);
                append(adj.l+e2,&e1);
-               scanf("%c", &c);
+               scanf("%c", &c); //scan ',' or '}'
             }
 
             break;
@@ -92,7 +92,6 @@ int main(int argc, char *argv[]) {
 
             if((start >= numNodes || start < 0) || (dest >= numNodes || dest < 0)) {
                printf("Error: Invalid source or destination (%d,%d)\n", start, dest);
-               freeAdjList(&adj);
                goto loop;
             }
 
@@ -129,8 +128,11 @@ int main(int argc, char *argv[]) {
                 }
 
                 free(prev);
-                freeAdjList(&adj);
                 break;
       }
+   }
+
+   if(adj.l != NULL) {
+      freeAdjList(&adj);
    }
 }
