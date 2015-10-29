@@ -10,6 +10,10 @@
 #include "adjacencyList.h"
 
 void initAdjList(adjList *adj, int numNodes, int elementSize) {
+	if (numNodes == 0) {
+	   return;
+	}
+
 	int i;
 	adj->numNodes = numNodes;
 	adj->l = (list *)malloc(numNodes*sizeof(list));

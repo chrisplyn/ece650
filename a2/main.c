@@ -70,6 +70,10 @@ int main(int argc, char *argv[]) {
             initAdjList(&adj, numNodes, sizeof(int));
             break;
          case 'E':
+            if(numNodes == 0) {  //empty graph
+               goto loop;
+            }
+
             scanf(" %c", &c);
 
             while(c != '}') {
@@ -90,6 +94,17 @@ int main(int argc, char *argv[]) {
          case 's':
             scanf(" %d %d", &start, &dest);
 
+            if(numNodes == 0) {
+               if( start != 0 || dest != 0) {
+                  printf("Error: Invalid source or destination for empty graph!\n");
+               }
+               else {
+                  printf("0-0\n");
+               }
+
+               goto loop;
+            }
+
             if((start >= numNodes || start < 0) || (dest >= numNodes || dest < 0)) {
                printf("Error: Invalid source or destination (%d,%d)\n", start, dest);
                goto loop;
@@ -99,8 +114,8 @@ int main(int argc, char *argv[]) {
             createList(&result, sizeof(int), NULL);
             prev = (int *)malloc(numNodes*sizeof(int));
             bfs(&adj, numNodes, start, prev);
-
             int cur = dest;
+
             while(prev[cur] != -1) {
                prepend(&result,&cur);
                cur = prev[cur];
@@ -120,6 +135,7 @@ int main(int argc, char *argv[]) {
                printf("%d-", *(int *) node->data);
                node = node->next;
             }
+
             printf("%d\n", *(int *) result.tail->data);
 
             CLEANUP:
