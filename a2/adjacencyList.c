@@ -18,6 +18,10 @@ void initAdjList(adjList *adj, int numNodes, int elementSize) {
 	adj->numNodes = numNodes;
 	adj->l = (list *)malloc(numNodes*sizeof(list));
 
+   if(!adj->l) {
+      return;
+   }
+   
 	for (i = 0; i < numNodes; ++i) {
 		createList(adj->l+i, elementSize, NULL);
 	}
