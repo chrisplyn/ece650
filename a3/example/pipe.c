@@ -7,8 +7,8 @@
 #include <sys/types.h>
 #include <stdio.h>
 
-/* join two commands by pipe */
-int join( char *com1[], char *com2[] )
+/* join two program by pipe */
+int join( const char *prog1, char *const arg1[], const char *prog2, char *const arg2[])
 {
     int p[2];       /* pipe */
     int status;     /* status */
@@ -23,27 +23,26 @@ int join( char *com1[], char *com2[] )
 
         case 0:
             /* child process */
-        printf("from the first child (pid %d)\n", getpid());
+        //printf("from the first child (pid %d)\n", getpid());
         break;
 
         default:
             /* parent process */
-            wait( &status );
-            printf("from the parent (pid %d)\n", getpid());
-            return( status );
+            wait(&status);
+            return(status);
     }
 
     /* remainder of routine executed by child */
 
     /* create pipe */
-    if( pipe( p ) < 0 ) /* can use 'p' since address */
+    if( pipe(p) < 0 ) /* can use 'p' since address */
     {
-        printf( "unable to pipe!\n" );
-        return( -1 );
+        printf("unable to pipe!\n");
+        return(-1);
     }
 
     /* create another process */
-    switch( fork() )
+    switch(fork())
     {
         case -1:
             /* fork was unsuccessful */
@@ -52,7 +51,6 @@ int join( char *com1[], char *com2[] )
 
         case 0:
             /* child process */
-            printf("from the second child (pid %d)\n", getpid());
             close( STD_OUTPUT );    /* close standard output */
 
             /* make standard output go to pipe */
@@ -61,16 +59,15 @@ int join( char *com1[], char *com2[] )
             close( p[READ] );       /* close file descriptors */
             close( p[WRITE] );
 
-            /* execute command 1 */
-            execvp( com1[0], com1 );
+            /* execute program 1 */
+            execv(prog1, arg1);
 
             /* if execvp returns, error occured */
-            printf( "first execvp call failed!\n" );
+            printf( "first execv call failed!\n" );
             return( -1 );
 
         default:
             /* parent process */
-            printf("from the first child (pid %d)\n", getpid());
             close( STD_INPUT );     /* close standard input */
 
             /* make standard input come from pipe */
@@ -79,36 +76,22 @@ int join( char *com1[], char *com2[] )
             close( p[READ] );       /* close file descriptors */
             close( p[WRITE] );
 
-            /* execute command 2 */
-            execvp( com2[0], com2 );
+            /* execute program 2 */
+            execv(prog2, arg2);
 
             /* if execvp returns, error occured */
-            printf( "second execvp call failed!\n" );
+            printf( "second execv call failed!\n" );
             return( -1 );
     }
 }
 
 int main( int argc, char *argv[] )
 {
-    char *one[4];   /* command 1 */
-    char *two[3];   /* command 2 */
+    char *arg1[2] = {"prog1.exe", 0 };
+    char *arg2[2] = {"prog2.exe", 0 };
     int rval;   /* return value */
 
-    /* list contents of /usr/lib */
-    one[0] = "ls";
-    one[1] = "-l";
-    one[2] = "/usr/lib";
-    one[3] = (char *)0;
-
-    /* grep for directories */
-    two[0] = "grep";
-    two[1] = "^d";
-    two[2] = (char *) 0;
-
-    /* join command 1 and command 2 by pipe */
-    rval = join( one, two );
-
-    printf( "join returned %d\n", rval );
-
-    return( 0 );
+    rval = join("prog1.exe",arg1,"prog2.exe",arg2);
+    printf("join returned %d\n", rval);
+    return 0;
 }
