@@ -163,7 +163,7 @@ int main(int argc, char *argv[]) {
                               vc[index] = j % numNodes - 1;
                            }
                         }
-                                                
+
                         index++;
                      }
                   }
@@ -175,6 +175,7 @@ int main(int argc, char *argv[]) {
                   }
                   printf("%d \n", vc[index-1]);
                   fflush(stdout);
+                  SAT_ReleaseManager(mgr);
                   break;
                }   
 
