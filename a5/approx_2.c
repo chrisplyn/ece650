@@ -45,4 +45,5 @@ void* approx2(void *parameters) {
 
 	qsort(param->vc, len, sizeof(int), compare);
 	param->vcSize = len;
+	return NULL;
 }

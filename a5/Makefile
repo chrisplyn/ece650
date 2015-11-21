@@ -6,7 +6,7 @@ OBJECTS = main.o list.o satcnf.o approx_1.o approx_2.o adjacencyList.o
 all: $(EXEC) 
 
 ${EXEC}: ${OBJECTS}
-	${CC} ${CFLAGS} -o ${EXEC} ${OBJECTS} -L. -lsat -lpthread 
+	${CC} ${CFLAGS} -o ${EXEC} ${OBJECTS} -L. -lsat -lpthread -lrt
 
 .PHONY: clean
 

@@ -142,4 +142,5 @@ void* sat_cnf(void *parameters) {
 	pthread_getcpuclockid(pthread_self(), &cid);
 	clock_gettime(cid, &end);
 	param->cputime = timediff(&start,&end);
+	return NULL;
 }
