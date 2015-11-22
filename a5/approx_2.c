@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <time.h>
+#include <pthread.h>
 /*Pick an edge <u,v>, and add both u and v to your vertex cover. Throw away all edges
 attached to u and v. Repeat till no edges remain. We will call this algorithm APPROX-
 VC-2.*/
@@ -13,9 +14,9 @@ void* approx2(void *parameters) {
 	thread_function_args *param = (thread_function_args *)parameters;
 	int numNodes = param->numNodes;
 	list *edgeList = param->edgeList;
-
 	listNode *cur = edgeList->head;
 	edge *e;
+	struct timespec start, end;
 
 	int j;
 	int len = 0;	
@@ -23,6 +24,10 @@ void* approx2(void *parameters) {
 	if(param->vc == NULL) {
 		param->vc = (int *)malloc(numNodes*sizeof(int));
 	}
+
+	clockid_t cid;
+	pthread_getcpuclockid(pthread_self(), &cid);
+	clock_gettime(cid, &start);
 
 	loop:while(cur != NULL){
 		e = (edge *) cur->data;
@@ -42,6 +47,10 @@ void* approx2(void *parameters) {
 		len++;		
 		cur = cur->next;
 	}	
+
+	pthread_getcpuclockid(pthread_self(), &cid);
+	clock_gettime(cid, &end);
+	param->cputime = timediff(&start,&end);
 
 	qsort(param->vc, len, sizeof(int), compare);
 	param->vcSize = len;

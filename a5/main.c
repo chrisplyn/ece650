@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
                thread_args[i].vc = NULL;
             }
 
-            int iter = 1;
+            int iter = 5;
             double ratio1,ratio2,runTimeSatCnf[iter],runTimeApprox1[iter],runTimeApprox2[iter];
             
             // #ifdef DEBUG
