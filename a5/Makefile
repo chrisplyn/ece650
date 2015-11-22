@@ -1,5 +1,5 @@
 CC := g++
-CFLAGS = -o3 -Wall
+CFLAGS = -o3 -Wall -g
 EXEC = a5-ece650
 OBJECTS = main.o list.o satcnf.o approx_1.o approx_2.o adjacencyList.o
 
