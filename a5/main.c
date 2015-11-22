@@ -72,13 +72,16 @@ int main(int argc, char *argv[]) {
             }
 
             int iter = 5;
-            double ratio1,ratio2,runTimeSatCnf,runTimeApprox1,runTimeApprox2;
+            double ratio1,ratio2,runTimeSatCnf[iter],runTimeApprox1[iter],runTimeApprox2[iter];
             
+            memset(runTimeSatCnf,0.0,iter*sizeof(double));
+            memset(runTimeApprox1,0.0,iter*sizeof(double));
+            memset(runTimeApprox2,0.0,iter*sizeof(double));
             // #ifdef DEBUG
             //    iter = 10;
             // #endif
 
-           // for(j=0; j<iter; j++) {
+            for(j=0; j<iter; j++) {
                pthread_create(&thread_satcnf, NULL, &sat_cnf, &thread_args[0]);
                pthread_create(&thread_approx_1, NULL, &approx1, &thread_args[1]);
                pthread_create(&thread_approx_2, NULL, &approx2, &thread_args[2]);
@@ -87,18 +90,18 @@ int main(int argc, char *argv[]) {
                pthread_join(thread_approx_1, NULL);
                pthread_join(thread_approx_2, NULL);   
 
-               runTimeSatCnf = thread_args[0].cputime;
-               runTimeApprox1 = thread_args[1].cputime;
-               runTimeApprox2 = thread_args[2].cputime;
+               runTimeSatCnf[j] = thread_args[0].cputime;
+               runTimeApprox1[j] = thread_args[1].cputime;
+               runTimeApprox2[j] = thread_args[2].cputime;
 
-            //}
+            }
 
             // #ifdef DEBUG
             //    ratio1 = thread_args[1].vcSize / (double) thread_args[0].vcSize;
             //    ratio2 = thread_args[2].vcSize / (double) thread_args[0].vcSize; 
 
                for(j=0; j<iter; j++) {
-                  printf("%f,%f,%f\n", runTimeSatCnf,runTimeApprox1,runTimeApprox2);
+                  printf("%f,%f,%f\n", runTimeSatCnf[j],runTimeApprox1[j],runTimeApprox2[j]);
                   fflush(stdout);
                }
             //    printf("%f,%f\n", ratio1,ratio2);
