@@ -72,11 +72,12 @@ int main(int argc, char *argv[]) {
             }
 
             int iter = 5;
-            double ratio1,ratio2,runTimeSatCnf[iter],runTimeApprox1[iter],runTimeApprox2[iter];
+            //double ratio1,ratio2,runTimeSatCnf[iter],runTimeApprox1[iter],runTimeApprox2[iter];
             
-            memset(runTimeSatCnf,0.0,iter*sizeof(double));
-            memset(runTimeApprox1,0.0,iter*sizeof(double));
-            memset(runTimeApprox2,0.0,iter*sizeof(double));
+            double *runTimeSatCnf = (double *)malloc(iter*sizeof(double));
+            double *runTimeApprox1 = (double *)malloc(iter*sizeof(double));
+            double *runTimeApprox2 = (double *)malloc(iter*sizeof(double));
+
             // #ifdef DEBUG
             //    iter = 10;
             // #endif
@@ -115,6 +116,9 @@ int main(int argc, char *argv[]) {
                   printVC(thread_args[i].vcSize, thread_args[i].vc, name[i]);
                   free(thread_args[i].vc);
                }
+               free(runTimeSatCnf);
+               free(runTimeApprox1);
+               free(runTimeApprox2);
             //#endif
 
              
