@@ -23,8 +23,7 @@ int main(int argc, char *argv[]) {
    edge e;
    createList(&edgeList, sizeof(edge), NULL);
    pthread_t thread_satcnf, thread_approx_1, thread_approx_2;
-   const char *name[N] = {"CNF-SAT-VC", "APPROX-VC-1", "APPROX-VC-2"};      
-
+      
    loop:while(scanf(" %c", &line) != EOF) {
       switch(line) {
          case 'V':
@@ -71,16 +70,15 @@ int main(int argc, char *argv[]) {
                thread_args[i].vc = NULL;
             }
 
-            int iter = 5;
-            //double ratio1,ratio2,runTimeSatCnf[iter],runTimeApprox1[iter],runTimeApprox2[iter];
-            
-            double *runTimeSatCnf = (double *)malloc(iter*sizeof(double));
-            double *runTimeApprox1 = (double *)malloc(iter*sizeof(double));
-            double *runTimeApprox2 = (double *)malloc(iter*sizeof(double));
+            int iter = 1;
 
-            // #ifdef DEBUG
-            //    iter = 10;
-            // #endif
+            #ifdef DEBUG
+               iter = 10;
+               double ratio1,ratio2;
+               double *runTimeSatCnf = (double *)malloc(iter*sizeof(double));
+               double *runTimeApprox1 = (double *)malloc(iter*sizeof(double));
+               double *runTimeApprox2 = (double *)malloc(iter*sizeof(double));
+            #endif
 
             for(j=0; j<iter; j++) {
                pthread_create(&thread_satcnf, NULL, &sat_cnf, &thread_args[0]);
@@ -91,58 +89,38 @@ int main(int argc, char *argv[]) {
                pthread_join(thread_approx_1, NULL);
                pthread_join(thread_approx_2, NULL);   
 
-               runTimeSatCnf[j] = thread_args[0].cputime;
-               runTimeApprox1[j] = thread_args[1].cputime;
-               runTimeApprox2[j] = thread_args[2].cputime;
-
+               #ifdef DEBUG
+                  runTimeSatCnf[j] = thread_args[0].cputime;
+                  runTimeApprox1[j] = thread_args[1].cputime;
+                  runTimeApprox2[j] = thread_args[2].cputime;
+               #endif
             }
 
-            // #ifdef DEBUG
-            //    ratio1 = thread_args[1].vcSize / (double) thread_args[0].vcSize;
-            //    ratio2 = thread_args[2].vcSize / (double) thread_args[0].vcSize; 
+            #ifdef DEBUG
+               ratio1 = thread_args[1].vcSize / (double) thread_args[0].vcSize;
+               ratio2 = thread_args[2].vcSize / (double) thread_args[0].vcSize; 
 
                for(j=0; j<iter; j++) {
                   printf("%f,%f,%f\n", runTimeSatCnf[j],runTimeApprox1[j],runTimeApprox2[j]);
                   fflush(stdout);
                }
-            //    printf("%f,%f\n", ratio1,ratio2);
-            //    fflush(stdout);
+               printf("%f,%f\n", ratio1,ratio2);
+               fflush(stdout);
 
-            //    for(i=0; i<N; i++) {
-            //       free(thread_args[i].vc);
-            //    }
-            // #else
                for(i=0; i<N; i++) {
-                  printVC(thread_args[i].vcSize, thread_args[i].vc, name[i]);
                   free(thread_args[i].vc);
                }
                free(runTimeSatCnf);
                free(runTimeApprox1);
                free(runTimeApprox2);
-            //#endif
-
-             
-
-            
-
-            // pthread_create(&thread_satcnf, NULL, &sat_cnf, &thread_args[0]);
-            // pthread_create(&thread_approx_1, NULL, &approx1, &thread_args[1]);
-            // pthread_create(&thread_approx_2, NULL, &approx2, &thread_args[2]);
-    
-            // pthread_join(thread_satcnf, NULL);
-            // pthread_join(thread_approx_1, NULL);
-            // pthread_join(thread_approx_2, NULL);
-
-            // for(i=0; i<N; i++) {
-            //    printVC(thread_args[i].vcSize, thread_args[i].vc, name[i]);
-            //    free(thread_args[i].vc);
-            // }
-
-            // #ifdef DEBUG
-            //    printf("CPU time of CNF-SAT-VC is %f. \n", thread_args[0].cputime);
-            // #else
-            //    printf("Running... this is a release build.");
-            // #endif
+            #else
+               const char *name[N] = {"CNF-SAT-VC", "APPROX-VC-1", "APPROX-VC-2"};
+                  
+               for(i=0; i<N; i++) {
+                  printVC(thread_args[i].vcSize, thread_args[i].vc, name[i]);
+                  free(thread_args[i].vc);
+               }
+            #endif
 
             break;   
       }
