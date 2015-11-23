@@ -11,7 +11,7 @@
 #include "satcnf.h"
 #include "approx_1.h"
 #include "approx_2.h"
-#define N 3 
+#define N 2 
 
 int numNodes = 0;
 list edgeList;
@@ -74,43 +74,44 @@ int main(int argc, char *argv[]) {
 
             #ifdef DEBUG
                iter = 10;
-               double ratio1,ratio2;
-               double *runTimeSatCnf = (double *)malloc(iter*sizeof(double));
+               //double ratio1,ratio2;
+               //double *runTimeSatCnf = (double *)malloc(iter*sizeof(double));
                double *runTimeApprox1 = (double *)malloc(iter*sizeof(double));
                double *runTimeApprox2 = (double *)malloc(iter*sizeof(double));
             #endif
 
             for(j=0; j<iter; j++) {
-               pthread_create(&thread_satcnf, NULL, &sat_cnf, &thread_args[0]);
+               //pthread_create(&thread_satcnf, NULL, &sat_cnf, &thread_args[0]);
                pthread_create(&thread_approx_1, NULL, &approx1, &thread_args[1]);
                pthread_create(&thread_approx_2, NULL, &approx2, &thread_args[2]);
 
-               pthread_join(thread_satcnf, NULL);
+               //pthread_join(thread_satcnf, NULL);
                pthread_join(thread_approx_1, NULL);
                pthread_join(thread_approx_2, NULL);   
 
                #ifdef DEBUG
-                  runTimeSatCnf[j] = thread_args[0].cputime;
+                  //runTimeSatCnf[j] = thread_args[0].cputime;
                   runTimeApprox1[j] = thread_args[1].cputime;
                   runTimeApprox2[j] = thread_args[2].cputime;
                #endif
             }
 
             #ifdef DEBUG
-               ratio1 = thread_args[1].vcSize / (double) thread_args[0].vcSize;
-               ratio2 = thread_args[2].vcSize / (double) thread_args[0].vcSize; 
+               // ratio1 = thread_args[1].vcSize / (double) thread_args[0].vcSize;
+               // ratio2 = thread_args[2].vcSize / (double) thread_args[0].vcSize; 
 
                for(j=0; j<iter; j++) {
-                  printf("%f,%f,%f\n", runTimeSatCnf[j],runTimeApprox1[j],runTimeApprox2[j]);
+                  printf("%f,%f\n", runTimeApprox1[j],runTimeApprox2[j]);
+                  //printf("%f,%f,%f\n", runTimeSatCnf[j],runTimeApprox1[j],runTimeApprox2[j]);
                   fflush(stdout);
                }
-               printf("%f,%f\n", ratio1,ratio2);
+               //printf("%f,%f\n", ratio1,ratio2);
                fflush(stdout);
 
                for(i=0; i<N; i++) {
                   free(thread_args[i].vc);
                }
-               free(runTimeSatCnf);
+               //free(runTimeSatCnf);
                free(runTimeApprox1);
                free(runTimeApprox2);
             #else
