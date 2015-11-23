@@ -97,6 +97,7 @@ int main(int argc, char *argv[]) {
             }
 
             #ifdef DEBUG
+               double ratio = thread_args[1].vcSize / (double) thread_args[0].vcSize;
                // ratio1 = thread_args[1].vcSize / (double) thread_args[0].vcSize;
                // ratio2 = thread_args[2].vcSize / (double) thread_args[0].vcSize; 
 
@@ -106,6 +107,7 @@ int main(int argc, char *argv[]) {
                   fflush(stdout);
                }
                //printf("%f,%f\n", ratio1,ratio2);
+               printf("%f\n", ratio);
                fflush(stdout);
 
                for(i=0; i<N; i++) {
