@@ -82,8 +82,8 @@ int main(int argc, char *argv[]) {
 
             for(j=0; j<iter; j++) {
                //pthread_create(&thread_satcnf, NULL, &sat_cnf, &thread_args[0]);
-               pthread_create(&thread_approx_1, NULL, &approx1, &thread_args[1]);
-               pthread_create(&thread_approx_2, NULL, &approx2, &thread_args[2]);
+               pthread_create(&thread_approx_1, NULL, &approx1, &thread_args[0]);
+               pthread_create(&thread_approx_2, NULL, &approx2, &thread_args[1]);
 
                //pthread_join(thread_satcnf, NULL);
                pthread_join(thread_approx_1, NULL);
@@ -91,8 +91,8 @@ int main(int argc, char *argv[]) {
 
                #ifdef DEBUG
                   //runTimeSatCnf[j] = thread_args[0].cputime;
-                  runTimeApprox1[j] = thread_args[1].cputime;
-                  runTimeApprox2[j] = thread_args[2].cputime;
+                  runTimeApprox1[j] = thread_args[0].cputime;
+                  runTimeApprox2[j] = thread_args[1].cputime;
                #endif
             }
 
