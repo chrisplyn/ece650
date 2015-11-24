@@ -102,7 +102,6 @@ int main(int argc, char *argv[]) {
                   fflush(stdout);
                }
                printf("%f,%f\n", ratio1,ratio2);
-               printf("%f\n", ratio);
                fflush(stdout);
 
                for(i=0; i<N; i++) {
