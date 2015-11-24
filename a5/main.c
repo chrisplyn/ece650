@@ -11,7 +11,7 @@
 #include "satcnf.h"
 #include "approx_1.h"
 #include "approx_2.h"
-#define N 2 
+#define N 3 
 
 int numNodes = 0;
 list edgeList;
