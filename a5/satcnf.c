@@ -117,7 +117,7 @@ void* sat_cnf(void *parameters) {
 					}
 					else {
 						if(j % numNodes == 0) {
-							param->vc[index] = n - 1;
+							param->vc[index] = numNodes - 1;
 						}
 						else {
 							param->vc[index] = j % numNodes - 1;
