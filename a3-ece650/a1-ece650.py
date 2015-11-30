@@ -1,4 +1,4 @@
-#!/usr/bin/python -u
+#!/usr/bin/python
 from __future__ import division
 import sys,fileinput,re
 from signal import signal, SIGPIPE, SIG_DFL

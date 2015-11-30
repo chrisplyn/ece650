@@ -13,6 +13,15 @@ typedef struct {
    int numNodes;
 } adjList;
 
+typedef struct {
+	int x,y;
+}endpoint;
+
+typedef struct {
+	endpoint e1, e2;
+}lineSeg;
+
+
 void initAdjList(adjList *, int, int);
 void freeAdjList(adjList *);
 void printAdjList(adjList *);

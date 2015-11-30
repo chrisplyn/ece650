@@ -40,16 +40,22 @@ void freeAdjList(adjList *adj) {
 void printAdjList(adjList *adj) {
    int i;
    listNode* current;
+   char street[20];
 
    for (i=0; i<adj->numNodes; ++i) {
-      if(isEmptyList(adj->l+i)) {
-         continue;
-      }
-
+      sprintf(street, "%s %d", "street ", i);
+      printf("a \"%s\" ", street);
       current = ((adj->l)[i]).head;
-      printf("neighbor of node:%d is ", i);
+
       while(current != NULL) {
-         printf("%d ", *(int *) current->data);
+         lineSeg *ls = (lineSeg *) current->data;
+
+         if(current == (adj->l+i)->head) {
+            printf("(%d,%d) (%d,%d) ",ls->e1.x,ls->e1.y,ls->e2.x,ls->e2.y);
+         }
+         else {
+            printf("(%d,%d) ",ls->e2.x,ls->e2.y);
+         }
          current = current->next;
       }
       printf("\n");

@@ -1,8 +1,7 @@
 /*
  * list.h
  *
- *  Created on: 2015Äê10ÔÂ20ÈÕ
- *      Author: Administrator
+ *      Author: Yinuo Liu
  */
 
 #ifndef LIST_H_
@@ -10,7 +9,7 @@
 
 typedef void (*freeFunction)(void *);
 
-typedef enum { FALSE, TRUE } boolean;
+typedef enum { FALSE=0, TRUE } boolean;
 
 typedef struct _listNode {
   void *data;

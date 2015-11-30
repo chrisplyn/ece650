@@ -1,8 +1,7 @@
 /*
  * list.cc
  *
- *  Created on: 2015Äê10ÔÂ20ÈÕ
- *      Author: Administrator
+ *      Author: Yinuo Liu
  */
 
 #include <stdlib.h>
@@ -39,7 +38,7 @@ void append(list *list, void *element){
    listNode *node = malloc(sizeof(listNode));
    node->data = malloc(list->elementSize);
    node->next = NULL;
-   memcpy(node->data, element, list->elementSize);
+   memcpy(node->data, element, list->elementSize); //shallow copy
 
    if(list->length == 0) {
      list->head = list->tail = node;

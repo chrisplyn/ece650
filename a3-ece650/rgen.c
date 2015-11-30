@@ -10,22 +10,14 @@
 #include <math.h>
 #include "adjacencyList.h"
 
-#define MAX_STREET 50;
-#define MAX_LINESEGMENT 50;
+#define MAX_TRIALS 25
+#define max(x, y) (((x) > (y)) ? (x) : (y))
+#define min(x, y) (((x) < (y)) ? (x) : (y))
 
 static int maxNumStreet = 10;
 static int maxNumLineSeg = 5;
 static int maxWaitTime = 5;
 static int maxCoordRange = 20;
-
-
-typedef struct {
-	int x,y;
-}endpoint;
-
-typedef struct {
-	endpoint e1, e2;
-}lineSeg;
 
 
 void parseArg(int argc,char *argv[]){
@@ -69,41 +61,154 @@ int generateRandHelper(int max) {
 int generateRand(int min, int max){
 	return min + generateRandHelper(max - min + 1);
 }
+ 
+int orientation(endpoint* p, endpoint* q, endpoint* r){
+    int val = (q->y - p->y) * (r->x - q->x) -
+              (q->x - p->x) * (r->y - q->y);
+ 
+    if (val == 0) return 0;  // colinear
+    return (val > 0)? 1: 2; // clock or counterclock wise
+}
+ 
+boolean compareEndpoint(endpoint *e1, endpoint *e2){
+	if(e1->x == e2->x && e1->y == e2->y) {
+		return TRUE;
+	}
+	return FALSE;
+} 
+
+boolean isZeorLength(lineSeg *ls){
+	return (compareEndpoint(&ls->e1,&ls->e2));
+}
+
+boolean onSegment(endpoint* p, endpoint* q, endpoint* r) {
+    if (q->x < max(p->x, r->x) && q->x > min(p->x, r->x) &&
+        q->y < max(p->y, r->y) && q->y > min(p->y, r->y))
+       return TRUE;
+
+    return FALSE;
+}
+
+boolean isColinear(lineSeg *ls1, lineSeg *ls2){
+	endpoint *p1 = &ls1->e1;
+	endpoint *q1 = &ls1->e2;
+	endpoint *p2 = &ls2->e1;
+	endpoint *q2 = &ls2->e2;
+
+	if(compareEndpoint(p1,p2) && compareEndpoint(q1,q2)) return TRUE;
+
+    int o1 = orientation(p1, q1, p2);
+    int o2 = orientation(p1, q1, q2);
+    int o3 = orientation(p2, q2, p1);
+    int o4 = orientation(p2, q2, q1);
+
+    if (o1 != o2 && o3 != o4) /*two line segments intersect*/
+        return FALSE;
+
+    /*two line segments overlap*/
+    if (o1 == 0 && onSegment(p1, p2, q1)) return TRUE;
+    if (o2 == 0 && onSegment(p1, q2, q1)) return TRUE;
+    if (o3 == 0 && onSegment(p2, p1, q2)) return TRUE;
+    if (o4 == 0 && onSegment(p2, q1, q2)) return TRUE;
+
+    /*neither overlap nor intersect*/
+    return FALSE;
+}
 
 
+boolean accecptLineSeg(lineSeg *ls, list *l){
+	listNode* cur = l->head;
+	lineSeg* ls1 = NULL;
+
+	while(cur != NULL){
+		ls1 = (lineSeg *)cur->data;
+
+		if(isColinear(ls,ls1)) {
+			return FALSE;
+		}
+
+		cur = cur->next;
+	}
+	return TRUE;
+}
+
+adjList adj = {NULL, 0};
 int main(int argc, char *argv[]){
 	parseArg(argc,argv);
+	endpoint tmp;
+	lineSeg ls;
+	int numFailures;
 
 	for(; ;){
-		int numStreet = generateRand(2, maxNumStreet);
-		int waitTime = generateRand(5, maxWaitTime);
-		int lineSeg[numStreet];
-		char streetName[numStreet][20];
-		//adjList adj = {NULL, 0};	/*store all streets in a adjacency list*/
-		//initAdjList(&adj, numStreet, sizeof(lineSeg)); 
-		
-		int j,k,x,y;
-		for(j = 0; j < numStreet; j++){
-			sprintf(streetName[j], "%s %d", "street", j);
+		int numStreet = generateRand(2,maxNumStreet);
+		int waitTime = generateRand(2,maxWaitTime);
+		int street[numStreet];
+
+		if(adj.l != NULL) {
+			freeAdjList(&adj);
 		}
+
+		initAdjList(&adj, numStreet, sizeof(lineSeg));
+		int j,k,m;
+		numFailures = 0;
 		
 		for(j = 0; j < numStreet; j++){ /* for each street */
-			printf("a \"%s\" ", streetName[j]);
-			lineSeg[j] = generateRand(1, maxNumLineSeg);
+			street[j] = generateRand(2,maxNumLineSeg);
 
-			for(k = 0; k <= lineSeg[j]; k++){
-				x = generateRand(-maxCoordRange,maxCoordRange);
-				y = generateRand(-maxCoordRange,maxCoordRange);
-				printf("(%d,%d) ", x, y);
+			for(k = 0; k < street[j]; k++){
+
+				/*check the validity of this line segment*/
+				while(1) {
+					if (numFailures >= MAX_TRIALS) {
+						fprintf(stderr, "Exceed maximum number trials to generate one street spec\n");
+						freeAdjList(&adj);
+						exit(1);
+					}
+
+					if(k == 0) {
+						ls.e1.x = generateRand(-maxCoordRange,maxCoordRange);
+						ls.e1.y = generateRand(-maxCoordRange,maxCoordRange);
+						ls.e2.x = generateRand(-maxCoordRange,maxCoordRange);
+						ls.e2.y = generateRand(-maxCoordRange,maxCoordRange);
+					}
+					else {
+						ls.e1.x = tmp.x;
+						ls.e1.y = tmp.y;
+						ls.e2.x = generateRand(-maxCoordRange,maxCoordRange);
+						ls.e2.y = generateRand(-maxCoordRange,maxCoordRange);
+					}
+
+					if(!isZeorLength(&ls)) { /*length not zero*/
+						boolean accepted = TRUE;
+
+						for(m=0; m<=j; m++) { /*go through current adjacency list*/
+							if(!accecptLineSeg(&ls,adj.l+m)){
+								accepted = FALSE;
+								numFailures++;
+								break;
+							}
+						}
+						if(accepted) { /*ls is accepted, append to street j's list*/
+							append(adj.l+j,&ls);
+							tmp.x = ls.e2.x;
+							tmp.y = ls.e2.y;
+							break;
+						}
+					}
+					else {
+						numFailures++;
+					}
+				}
 			}
-			fflush(stdout);	
-			printf("\n");
 		}
+		printAdjList(&adj);
+		freeAdjList(&adj);
 		printf("g\n");
 		printf("r\n");
 		fflush(stdout);
-		sleep(waitTime);	
+		sleep(waitTime);
 	}
-
 }
+
+
 

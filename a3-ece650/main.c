@@ -47,7 +47,7 @@ void bfs(adjList* adj, int numNodes, int origin, int* prev) {
 
 int main(int argc, char *argv[]) {
    char line,c;
-   int numNodes, e1, e2, start, dest, *prev, rval;
+   int numNodes, e1, e2, start, dest, *prev;
    adjList adj = {NULL, 0};
 
    loop:while(scanf(" %c", &line) != EOF) {
@@ -151,4 +151,5 @@ int main(int argc, char *argv[]) {
    if(adj.l != NULL) {
       freeAdjList(&adj);
    }
+   return 0;
 }
